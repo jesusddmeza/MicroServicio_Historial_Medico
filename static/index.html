@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Microservicio Historial Médico</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:30px;
+background:#f4f6f8;
+}
+
+h1{
+color:#1f4e79;
+}
+
+.box{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+input,button{
+padding:10px;
+margin:5px 0;
+width:100%;
+box-sizing:border-box;
+}
+
+button{
+background:#1f4e79;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#163a5a;
+}
+
+pre{
+background:#111;
+color:#0f0;
+padding:15px;
+overflow-x:auto;
+border-radius:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Microservicio de Historial Médico</h1>
+
+
+<div class="box">
+
+<h2>Consultar historial médico</h2>
+
+<input type="number" id="patientQuery" placeholder="ID del paciente">
+
+<button onclick="getRecords()">Consultar historial médico</button>
+
+<pre id="queryResult"></pre>
+
+</div>
+
+
+<div class="box">
+
+<h2>Crear registro médico</h2>
+
+<input type="number" id="patientId" placeholder="Patient ID">
+
+<input type="number" id="doctorId" placeholder="Doctor ID">
+
+<input type="text" id="diagnosis" placeholder="Diagnóstico">
+
+<input type="text" id="treatment" placeholder="Tratamiento">
+
+<input type="date" id="date">
+
+<button onclick="createRecord()">Guardar registro</button>
+
+<pre id="createResult"></pre>
+
+</div>
+
+
+<script>
+
+async function getRecords(){
+
+const patientId=document.getElementById("patientQuery").value;
+
+const resultBox=document.getElementById("queryResult");
+
+if(!patientId){
+
+resultBox.textContent="Debes escribir un ID de paciente";
+
+return;
+
+}
+
+const res=await fetch(`/records/${patientId}`);
+
+const data=await res.json();
+
+resultBox.textContent=JSON.stringify(data,null,2);
+
+}
+
+
+
+async function createRecord(){
+
+const patientId=document.getElementById("patientId").value;
+
+const doctorId=document.getElementById("doctorId").value;
+
+const diagnosis=document.getElementById("diagnosis").value;
+
+const treatment=document.getElementById("treatment").value;
+
+const date=document.getElementById("date").value;
+
+const resultBox=document.getElementById("createResult");
+
+const body={
+
+patientId:Number(patientId),
+
+doctorId:Number(doctorId),
+
+diagnosis:diagnosis,
+
+treatment:treatment,
+
+date:date||null
+
+};
+
+const res=await fetch("/records",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify(body)
+
+});
+
+const data=await res.json();
+
+resultBox.textContent=JSON.stringify(data,null,2);
+
+}
+
+</script>
+
+</body>
+</html>
